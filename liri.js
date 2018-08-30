@@ -1,22 +1,19 @@
 require("dotenv").config();
 var keys = require("./keys.js");
 //console.log(keys);
+var fs = require('fs');
 var moment = require('moment');
+var Spotify = require('node-spotify-api');
+//^ NPM packages^^//
 
+// the passed in user input arguments//
 var inputString = process.argv;
 var userInput1 = inputString[2];
 var userInput2 = inputString.slice(3).join(' ');
 
-var Spotify = require('node-spotify-api');
-
-
-
-
-
-
-
+///////bandsintown//////
 function concertSearch() {
-    /////bandsintown//////
+
     var queryURL = "https://rest.bandsintown.com/artists/" + userInput2 + "/events?app_id=" + keys.bandsintown.api_key;
 
     var request = require('request');
@@ -35,6 +32,7 @@ function concertSearch() {
             "---------------------");
     });
 };
+/// ^^^ bandsintown^^//
 
 //////Spotify/////
 function spotifySearch() {
@@ -67,8 +65,8 @@ function movieSearch() {
 
     request = require('request');
     request("http://www.omdbapi.com/?apikey=" + keys.omdb.api_key + "&t=" + userInput2, function (error, response, body) {
-        // console.log('error:', error); // Print the error if one occurred
-        //console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+        console.log('error:', error); // Print the error if one occurred
+        console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
         var data = JSON.parse(body);
         console.log("" + "\n" +
             "Title: " + (data.Title) + "\n" +
@@ -89,13 +87,19 @@ function movieSearch() {
 
         );
     });
-};
+};//**** Some movies don't have rotten tomato ratings, which results in an error **/
 ////^^^^///OMDB////^^^///
 
+/////fs grabbing random.txt file to read it///
 function doWhatItSays() {
-    console.log('do what it says');
+    fs.readFile('./random.txt', "utf8", function read(err, data) {
+        if (err) {
+            throw err;
+        }
+        console.log(data);
+    });
 };
-
+////// function for terminal user inputs////
 var search = function () {
     if (userInput1 === 'concert-this') {
         concertSearch(userInput2);
@@ -104,7 +108,7 @@ var search = function () {
     } else if (userInput1 === 'movie-this') {
         movieSearch(userInput2);
     } else if (userInput1 === 'do-what-it-says') {
-        doWhatItSays(userInput2);
+        doWhatItSays();
     } else { };
 };
 
